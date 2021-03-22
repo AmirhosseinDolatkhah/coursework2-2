@@ -3,6 +3,7 @@ package model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -85,5 +86,17 @@ public final class Model {
 
     public boolean isOptimized() {
         return isOptimized;
+    }
+
+    public void loadPartially(int from, int to) {
+        if (!isOptimized)
+            throw new RuntimeException("Not optimization possible");
+        columnVisibility = new boolean[to - from + 1];
+        Arrays.fill(columnVisibility, true);
+        try {
+            ((OptimizedDataFrame) dataHandler).loadPartially(from, to);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found");
+        }
     }
 }

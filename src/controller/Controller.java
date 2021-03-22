@@ -2,6 +2,7 @@ package controller;
 
 import model.JSONWriter;
 import model.Model;
+import model.OptimizedDataFrame;
 import view.WindowFrame;
 
 import javax.swing.*;
@@ -81,6 +82,11 @@ public final class Controller {
             @Override
             protected boolean isOptimized(String name) {
                 return models.get(name).isOptimized();
+            }
+
+            @Override
+            protected void setRangeInOptimizedDataFrame(String name, int from, int to) {
+                models.get(name).loadPartially(from, to);
             }
         };
     }

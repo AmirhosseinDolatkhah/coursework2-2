@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -204,6 +206,20 @@ public abstract class WindowFrame extends MainFrame {
         tableState.getTabbedPane().
                 getTabComponentAt(tableState.getTabbedPane().getTabCount() - 1).
                 setForeground(isOptimized(name) ? Color.GREEN : Color.BLUE);
+        tableState.getTabbedPane().
+                getTabComponentAt(tableState.getTabbedPane().getTabCount() - 1).
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        var tabbedPane = tableState.getTabbedPane();
+                        tabbedPane.removeTabAt(tabbedPane.getSelectedIndex());
+                        var res = JOptionPane.showInputDialog("Enter row index in (from, to) format. Both inclusive(Start from 1).").replace(" ", "").split(",");
+                        setRangeInOptimizedDataFrame(name, Integer.parseInt(res[0]), Integer.parseInt(res[1]));
+                        addTable(name);
+                        tabbedPane.repaint();
+                        tabbedPane.revalidate();
+                    }
+                });
     }
 
     protected abstract String[] getColumnModel(String name);
@@ -218,4 +234,5 @@ public abstract class WindowFrame extends MainFrame {
     protected abstract String getJSON(String tableName);
     protected abstract void saveJSON(String path, String tableName);
     protected abstract boolean isOptimized(String name);
+    protected abstract void setRangeInOptimizedDataFrame(String name, int from, int to);
 }

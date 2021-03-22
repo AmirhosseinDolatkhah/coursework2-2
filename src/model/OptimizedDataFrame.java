@@ -10,27 +10,36 @@ import java.util.stream.Collectors;
 
 public class OptimizedDataFrame implements DataHandler {
     private final ArrayList<Column> columns;
-    private final Scanner scanner;
+    private final File file;
     private final boolean isJson;
 
     public OptimizedDataFrame(File file) {
         columns = new ArrayList<>();
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("Not Found File");
-        }
+        this.file = file;
         isJson = file.getName().toLowerCase().endsWith(".json");
-        loadPartially(1, 100);
+        try {
+            loadPartially(1, 100);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found");
+        }
     }
 
-    public void loadPartially(int from, int to) {
+    public void loadPartially(int from, int to) throws FileNotFoundException {
         boolean isColSet = false;
         int counter = 0;
-        scanner.reset();
+        var scanner = new Scanner(file);
+        columns.clear();
+        String[] columnNames = new String[0];
+        if (!isJson) {
+            columnNames = scanner.nextLine().split(",");
+            for (var name : columnNames)
+                addColumn(new Column(name));
+        }
         while (scanner.hasNext() && counter <= to) {
-            if (counter < from)
+            if (counter < from) {
+                counter++;
                 continue;
+            }
             if (isJson) {
                 var line = scanner.nextLine();
                 if (line.trim().startsWith("[") || line.trim().startsWith("{") || line.trim().startsWith("]"))
@@ -48,16 +57,11 @@ public class OptimizedDataFrame implements DataHandler {
                 } catch (Exception ignore) {
                 }
             } else {
-                var columnNames = scanner.nextLine().split(",");
-                for (var name : columnNames)
-                    addColumn(new Column(name));
-                while (scanner.hasNext()) {
-                    var tuple = scanner.nextLine().split(",");
-                    int counter2 = 0;
-                    for (var cell : tuple)
-                        addValue(columnNames[counter2++], cell == null || cell.isEmpty() ? "null" : cell);
-                    counter++;
-                }
+                var tuple = scanner.nextLine().split(",");
+                int counter2 = 0;
+                for (var cell : tuple)
+                    addValue(columnNames[counter2++], cell == null || cell.isEmpty() ? "null" : cell);
+                counter++;
             }
         }
     }
