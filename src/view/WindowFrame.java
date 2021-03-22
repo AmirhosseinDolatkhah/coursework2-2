@@ -211,10 +211,18 @@ public abstract class WindowFrame extends MainFrame {
                 addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseReleased(MouseEvent e) {
+                        try {
+                            var res = JOptionPane.showInputDialog(
+                                    "Enter row index in (from, to) format. Both inclusive(Start from 1).")
+                                    .replace(" ", "").split(",");
+                            setRangeInOptimizedDataFrame(name, Integer.parseInt(res[0]), Integer.parseInt(res[1]));
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Something went wrong (Maybe input format or range).",
+                                    "Sorry!", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                         var tabbedPane = tableState.getTabbedPane();
                         tabbedPane.removeTabAt(tabbedPane.getSelectedIndex());
-                        var res = JOptionPane.showInputDialog("Enter row index in (from, to) format. Both inclusive(Start from 1).").replace(" ", "").split(",");
-                        setRangeInOptimizedDataFrame(name, Integer.parseInt(res[0]), Integer.parseInt(res[1]));
                         addTable(name);
                         tabbedPane.repaint();
                         tabbedPane.revalidate();
