@@ -11,6 +11,7 @@ public final class Model {
     private final DataHandler dataHandler;
     private boolean[] columnVisibility;
     private final boolean isOptimized;
+    private int from;
 
     public Model(File file, boolean optimized) {
         if (file.getName().endsWith(".csv")) {
@@ -30,8 +31,8 @@ public final class Model {
         }
         columnVisibility = new boolean[dataHandler.getColumnCount()];
         isOptimized = optimized;
-        for (int i = 0; i < dataHandler.getColumnCount(); i++)
-            columnVisibility[i] = true;
+        from = 1;
+        Arrays.fill(columnVisibility, true);
     }
 
     public String[] getColumns() {
@@ -89,6 +90,7 @@ public final class Model {
     }
 
     public void loadPartially(int from, int to) {
+        this.from = from;
         if (!isOptimized)
             throw new RuntimeException("Not optimization possible");
         columnVisibility = new boolean[to - from + 1];
@@ -98,5 +100,9 @@ public final class Model {
         } catch (FileNotFoundException e) {
             throw new RuntimeException("File not found");
         }
+    }
+
+    public int getStartIndex() {
+        return from;
     }
 }

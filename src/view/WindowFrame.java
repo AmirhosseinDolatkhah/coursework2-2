@@ -162,8 +162,9 @@ public abstract class WindowFrame extends MainFrame {
         cm[0] = "No.";
         System.arraycopy(majorCM, 0, cm, 1, majorCM.length);
         var rm = new String[majorRM.length][majorRM[0].length + 1];
+        int startIndex = getStartIndex(name);
         for (int i = 0; i < majorRM.length; i++) {
-            rm[i][0] = String.valueOf(i + 1);
+            rm[i][0] = String.valueOf(startIndex + i);
             System.arraycopy(majorRM[i], 0, rm[i], 1, majorCM.length);
         }
         JTable dataTable = new JTable(new DefaultTableModel(rm, cm));
@@ -185,7 +186,7 @@ public abstract class WindowFrame extends MainFrame {
                     return;
                 var sr = getSearchResultIndexes(name, (String) columns.getSelectedItem(), txtField.getText());
                 for (var i : sr)
-                    indexResult.addItem(i);
+                    indexResult.addItem(i - 1 + startIndex);
                 label.setText("========> Search Result Indexes (" + sr.size() + " Items are found): ");
             }
 
@@ -243,4 +244,5 @@ public abstract class WindowFrame extends MainFrame {
     protected abstract void saveJSON(String path, String tableName);
     protected abstract boolean isOptimized(String name);
     protected abstract void setRangeInOptimizedDataFrame(String name, int from, int to);
+    protected abstract int getStartIndex(String name);
 }

@@ -88,6 +88,11 @@ public final class Controller {
             protected void setRangeInOptimizedDataFrame(String name, int from, int to) {
                 models.get(name).loadPartially(from, to);
             }
+
+            @Override
+            protected int getStartIndex(String name) {
+                return models.get(name).getStartIndex();
+            }
         };
     }
 
